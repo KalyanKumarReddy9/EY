@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileHeader } from "@/components/MobileHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ interface ChatMessage {
 }
 
 export default function Knowledge() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -80,33 +82,34 @@ export default function Knowledge() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
       
-      <main className="ml-64 flex-1">
-        <div className="container max-w-7xl py-8">
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold text-foreground">Knowledge Base</h1>
-            <p className="text-muted-foreground">
+      <main className="flex-1 md:ml-64 pt-14 md:pt-0">
+        <div className="container max-w-7xl py-4 md:py-8 px-4">
+          <div className="mb-6 md:mb-8">
+            <h1 className="mb-2 text-2xl md:text-3xl font-bold text-foreground">Knowledge Base</h1>
+            <p className="text-sm md:text-base text-muted-foreground">
               Upload documents and chat with your research files
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
             {/* Upload Section */}
             <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>Upload Documents</CardTitle>
-                <CardDescription>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg md:text-xl">Upload Documents</CardTitle>
+                <CardDescription className="text-xs md:text-sm">
                   Upload pharmaceutical research papers, reports, and data files
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 p-12 transition-colors hover:bg-muted/50">
-                  <Upload className="mb-4 h-12 w-12 text-muted-foreground" />
-                  <p className="mb-2 text-sm font-medium text-foreground">
+              <CardContent className="space-y-4 md:space-y-6">
+                <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 p-8 md:p-12 transition-colors hover:bg-muted/50">
+                  <Upload className="mb-3 md:mb-4 h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />
+                  <p className="mb-2 text-xs md:text-sm font-medium text-foreground">
                     Click to upload files
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[10px] md:text-xs text-muted-foreground text-center">
                     PDF, DOCX, TXT up to 10MB
                   </p>
                   <input
@@ -120,22 +123,22 @@ export default function Knowledge() {
 
                 {documents.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-foreground">
+                    <h3 className="text-xs md:text-sm font-medium text-foreground">
                       Uploaded Documents
                     </h3>
                     <div className="space-y-2">
                       {documents.map((doc) => (
                         <div
                           key={doc.id}
-                          className="flex items-center justify-between rounded-lg border border-border bg-card p-3"
+                          className="flex items-center justify-between rounded-lg border border-border bg-card p-2 md:p-3"
                         >
-                          <div className="flex items-center gap-3">
-                            <FileText className="h-5 w-5 text-primary" />
-                            <div>
-                              <p className="text-sm font-medium text-foreground">
+                          <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                            <FileText className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs md:text-sm font-medium text-foreground truncate">
                                 {doc.name}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-[10px] md:text-xs text-muted-foreground">
                                 {doc.size}
                               </p>
                             </div>
@@ -144,8 +147,9 @@ export default function Knowledge() {
                             size="sm"
                             variant="outline"
                             onClick={() => openDocumentChat(doc)}
+                            className="flex-shrink-0 h-8 md:h-9"
                           >
-                            <MessageSquare className="h-4 w-4" />
+                            <MessageSquare className="h-3.5 w-3.5 md:h-4 md:w-4" />
                           </Button>
                         </div>
                       ))}
@@ -157,11 +161,11 @@ export default function Knowledge() {
 
             {/* Chat Section */}
             <Card className="shadow-card">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Document Chat</CardTitle>
-                    <CardDescription>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-lg md:text-xl">Document Chat</CardTitle>
+                    <CardDescription className="text-xs md:text-sm truncate">
                       {selectedDoc
                         ? `Chatting with: ${selectedDoc.name}`
                         : "Select a document to start chatting"}
@@ -175,17 +179,18 @@ export default function Knowledge() {
                         setSelectedDoc(null);
                         setChatMessages([]);
                       }}
+                      className="flex-shrink-0 h-8 w-8 md:h-10 md:w-10"
                     >
-                      <X className="h-5 w-5" />
+                      <X className="h-4 w-4 md:h-5 md:w-5" />
                     </Button>
                   )}
                 </div>
               </CardHeader>
               <CardContent>
                 {selectedDoc ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {/* Chat Messages */}
-                    <div className="h-96 space-y-4 overflow-y-auto rounded-lg border border-border bg-muted/20 p-4">
+                    <div className="h-80 md:h-96 space-y-3 md:space-y-4 overflow-y-auto rounded-lg border border-border bg-muted/20 p-3 md:p-4">
                       {chatMessages.map((msg) => (
                         <div
                           key={msg.id}
@@ -194,13 +199,13 @@ export default function Knowledge() {
                           }`}
                         >
                           <div
-                            className={`max-w-[80%] rounded-lg p-3 ${
+                            className={`max-w-[85%] md:max-w-[80%] rounded-lg p-2.5 md:p-3 ${
                               msg.role === "user"
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-card text-foreground"
                             }`}
                           >
-                            <p className="text-sm">{msg.content}</p>
+                            <p className="text-xs md:text-sm break-words">{msg.content}</p>
                           </div>
                         </div>
                       ))}
@@ -213,18 +218,18 @@ export default function Knowledge() {
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyPress={(e) => e.key === "Enter" && sendChatMessage()}
                         placeholder="Ask about this document..."
-                        className="bg-input"
+                        className="bg-input text-sm"
                       />
-                      <Button onClick={sendChatMessage} size="icon">
-                        <Send className="h-4 w-4" />
+                      <Button onClick={sendChatMessage} size="icon" className="flex-shrink-0 h-9 w-9 md:h-10 md:w-10">
+                        <Send className="h-3.5 w-3.5 md:h-4 md:w-4" />
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex h-96 items-center justify-center rounded-lg border border-dashed border-border bg-muted/20">
-                    <div className="text-center">
-                      <MessageSquare className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex h-80 md:h-96 items-center justify-center rounded-lg border border-dashed border-border bg-muted/20">
+                    <div className="text-center p-4">
+                      <MessageSquare className="mx-auto mb-3 md:mb-4 h-10 w-10 md:h-12 md:w-12 text-muted-foreground" />
+                      <p className="text-xs md:text-sm text-muted-foreground">
                         Upload and select a document to start chatting
                       </p>
                     </div>

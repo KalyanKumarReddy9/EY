@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileHeader } from "@/components/MobileHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,42 +42,45 @@ const reports = [
 ];
 
 export default function Reports() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
       
-      <main className="ml-64 flex-1">
-        <div className="container max-w-7xl py-8">
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold text-foreground">Reports</h1>
-            <p className="text-muted-foreground">
+      <main className="flex-1 md:ml-64 pt-14 md:pt-0">
+        <div className="container max-w-7xl py-4 md:py-8 px-4">
+          <div className="mb-6 md:mb-8">
+            <h1 className="mb-2 text-2xl md:text-3xl font-bold text-foreground">Reports</h1>
+            <p className="text-sm md:text-base text-muted-foreground">
               Access and download your pharmaceutical research reports
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {reports.map((report) => (
               <Card key={report.id} className="shadow-card transition-all hover:shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex flex-1 items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                        <FileText className="h-6 w-6 text-primary" />
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4">
+                    <div className="flex flex-1 items-start gap-3 md:gap-4 min-w-0 w-full sm:w-auto">
+                      <div className="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                        <FileText className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
-                      <div className="flex-1 space-y-2">
-                        <h3 className="font-semibold text-foreground">{report.title}</h3>
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      <div className="flex-1 space-y-1 md:space-y-2 min-w-0">
+                        <h3 className="font-semibold text-sm md:text-base text-foreground truncate">{report.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
+                            <Calendar className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
                             {new Date(report.date).toLocaleDateString()}
                           </div>
-                          <Badge variant="secondary">{report.category}</Badge>
-                          <span>{report.size}</span>
+                          <Badge variant="secondary" className="text-[10px] md:text-xs">{report.category}</Badge>
+                          <span className="text-[10px] md:text-xs">{report.size}</span>
                         </div>
                       </div>
                     </div>
-                    <Button size="sm">
-                      <Download className="mr-2 h-4 w-4" />
+                    <Button size="sm" className="w-full sm:w-auto text-xs md:text-sm">
+                      <Download className="mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
                       Download
                     </Button>
                   </div>
