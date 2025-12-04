@@ -22,3 +22,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build / system
+.expo
+.turbo
+.cache
+.vite
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store

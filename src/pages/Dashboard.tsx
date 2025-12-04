@@ -3,31 +3,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileHeader } from "@/components/MobileHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Database, Activity, ArrowRight } from "lucide-react";
-
-const agents = [
-  {
-    name: "Market Insights Agent",
-    source: "IQVIA",
-    description: "Analyzes global pharmaceutical market data, competitive intelligence, and sales trends across therapeutic areas.",
-    capabilities: ["Sales Analytics", "Market Forecasting", "Competitive Analysis"],
-    icon: TrendingUp,
-  },
-  {
-    name: "Trade Data Agent",
-    source: "EXIM",
-    description: "Monitors international pharmaceutical trade flows, import/export patterns, and supply chain dynamics.",
-    capabilities: ["Trade Flow Analysis", "Supply Chain Mapping", "Import/Export Tracking"],
-    icon: Database,
-  },
-  {
-    name: "Clinical Trials Agent",
-    source: "ClinicalTrials.gov",
-    description: "Tracks ongoing clinical trials, research outcomes, and drug development pipelines worldwide.",
-    capabilities: ["Trial Monitoring", "Pipeline Analysis", "Outcome Tracking"],
-    icon: Activity,
-  },
-];
+import { TrendingUp, Database, Activity, ArrowRight, Download, BookOpen } from "lucide-react";
+import { agents as allAgents } from "./Agents";
 
 const processSteps = [
   {
@@ -67,47 +44,71 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Agent Cards */}
-          <div className="mb-8 md:mb-12 grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {agents.map((agent) => (
-              <Card key={agent.name} className="shadow-card transition-all hover:shadow-lg">
-                <CardHeader className="pb-3">
-                  <div className="mb-2 md:mb-3 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-primary/10">
-                    <agent.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-base md:text-lg">{agent.name}</CardTitle>
-                  <CardDescription className="text-xs text-muted-foreground">
-                    {agent.source}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 md:space-y-4">
-                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                    {agent.description}
-                  </p>
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-foreground">Key Capabilities:</p>
-                    <ul className="space-y-1">
-                      {agent.capabilities.map((capability) => (
-                        <li
-                          key={capability}
-                          className="text-xs text-muted-foreground flex items-center gap-2"
-                        >
-                          <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-                          {capability}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <Button className="w-full text-sm" size="sm">
-                    Start Analysis <ArrowRight className="ml-2 h-3.5 w-3.5 md:h-4 md:w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Summary Tiles */}
+          <div className="mb-8 md:mb-12 grid gap-4 md:gap-6 sm:grid-cols-3">
+            <Card className="card-elevated p-5 md:p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Worker Agents</p>
+                  <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-2">{allAgents.length}</h3>
+                  <p className="text-xs text-muted-foreground">Active agents available</p>
+                </div>
+                <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
+                  <TrendingUp className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="card-elevated p-5 md:p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Reports Downloaded</p>
+                  <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-2">0</h3>
+                  <p className="text-xs text-muted-foreground">No reports yet</p>
+                </div>
+                <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
+                  <Download className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="card-elevated p-5 md:p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Knowledge Base</p>
+                  <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Ready</h3>
+                  <p className="text-xs text-muted-foreground">Upload & search docs</p>
+                </div>
+                <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
+                  <BookOpen className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Available Agents List */}
+          <div className="mb-8">
+            <h2 className="mb-3 text-lg font-semibold">Available Agents</h2>
+            <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {allAgents.map((agent) => (
+                <Card key={agent.name} className="card-elevated border-border/50 hover:border-primary/30 transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="mb-2 md:mb-3 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 transition-all duration-300">
+                      <agent.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-base md:text-lg">{agent.name}</CardTitle>
+                    <CardDescription className="text-xs text-muted-foreground">{agent.source}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{agent.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
 
           {/* How It Works */}
-          <Card className="shadow-card">
+          <Card className="shadow-card border-border/50 bg-gradient-subtle">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg md:text-xl">How It Works</CardTitle>
               <CardDescription className="text-xs md:text-sm">
@@ -117,16 +118,16 @@ export default function Dashboard() {
             <CardContent>
               <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {processSteps.map((step, index) => (
-                  <div key={step.step} className="relative">
+                  <div key={step.step} className="relative group">
                     <div className="mb-3 md:mb-4 flex items-center gap-3 md:gap-4">
-                      <div className="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full bg-primary text-base md:text-lg font-bold text-primary-foreground">
+                      <div className="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full bg-gradient-medical text-base md:text-lg font-bold text-primary-foreground shadow-md group-hover:shadow-lg transition-shadow">
                         {step.step}
                       </div>
                       {index < processSteps.length - 1 && (
-                        <div className="hidden h-0.5 flex-1 bg-border lg:block" />
+                        <div className="hidden h-0.5 flex-1 bg-gradient-to-r from-primary/40 to-transparent lg:block" />
                       )}
                     </div>
-                    <h3 className="mb-2 font-semibold text-sm md:text-base text-foreground">{step.title}</h3>
+                    <h3 className="mb-2 font-semibold text-sm md:text-base text-foreground group-hover:text-primary transition-colors">{step.title}</h3>
                     <p className="text-xs md:text-sm text-muted-foreground">{step.description}</p>
                   </div>
                 ))}

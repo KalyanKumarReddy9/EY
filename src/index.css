@@ -8,96 +8,101 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Medical-grade soft blue theme */
-    --background: 215 25% 97%;
-    --foreground: 215 20% 25%;
+    /* Professional Medical Green Theme with Distinct Light Blue Background */
+    --background: 195 40% 92%; /* More distinguishable light blue */
+    --foreground: 150 15% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 20% 25%;
+    /* Updated card and popover to use a more distinguishable light blue instead of almost white */
+    --card: 195 35% 88%; /* Clearly visible light blue */
+    --card-foreground: 150 15% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 20% 25%;
+    --popover: 195 35% 88%; /* Clearly visible light blue */
+    --popover-foreground: 150 15% 20%;
 
-    /* Soft sky blue primary - signature medical color */
-    --primary: 199 89% 65%;
+    /* Medical green primary - even lighter green as requested */
+    --primary: 145 60% 70%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 20% 96%;
-    --secondary-foreground: 215 20% 25%;
+    --secondary: 195 30% 85%;
+    --secondary-foreground: 150 15% 20%;
 
-    --muted: 215 15% 95%;
-    --muted-foreground: 215 10% 50%;
+    --muted: 195 25% 82%;
+    --muted-foreground: 150 10% 45%;
 
-    --accent: 199 89% 90%;
-    --accent-foreground: 215 20% 25%;
+    --accent: 145 50% 80%;
+    --accent-foreground: 150 15% 20%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 88%;
-    --input: 215 15% 95%;
-    --ring: 199 89% 65%;
+    --border: 195 25% 78%;
+    --input: 195 30% 90%;
+    --ring: 145 60% 50%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 215 20% 35%;
-    --sidebar-primary: 199 89% 65%;
+    /* Updated sidebar to use a more distinguishable light blue instead of almost white */
+    --sidebar-background: 195 30% 86%; /* Clearly visible light blue */
+    --sidebar-foreground: 150 15% 25%;
+    --sidebar-primary: 145 60% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 89% 95%;
-    --sidebar-accent-foreground: 215 20% 25%;
-    --sidebar-border: 215 20% 92%;
-    --sidebar-ring: 199 89% 65%;
+    --sidebar-accent: 195 30% 80%;
+    --sidebar-accent-foreground: 150 15% 20%;
+    --sidebar-border: 195 25% 75%;
+    --sidebar-ring: 145 60% 50%;
 
-    /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(199 89% 65%), hsl(199 89% 75%));
-    --gradient-subtle: linear-gradient(180deg, hsl(215 25% 97%), hsl(199 89% 97%));
+    /* Custom gradients - updated for distinguishable light blue background */
+    --gradient-primary: linear-gradient(135deg, hsl(145 60% 70%), hsl(145 55% 75%));
+    --gradient-subtle: linear-gradient(180deg, hsl(195 40% 92%), hsl(145 50% 85%));
+    --gradient-success: linear-gradient(135deg, hsl(145 65% 55%), hsl(160 60% 60%));
     
-    /* Shadows */
-    --shadow-soft: 0 2px 8px -2px hsl(215 20% 25% / 0.08);
-    --shadow-card: 0 4px 12px -3px hsl(215 20% 25% / 0.1);
+    /* Professional shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(145 20% 25% / 0.08);
+    --shadow-card: 0 4px 12px -3px hsl(145 20% 25% / 0.12);
+    --shadow-elevated: 0 8px 24px -6px hsl(145 20% 25% / 0.15);
     
-    /* Transitions */
+    /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .dark {
-    --background: 215 30% 12%;
-    --foreground: 215 15% 90%;
+    --background: 150 20% 12%; /* Darker background */
+    --foreground: 140 15% 90%;
 
-    --card: 215 25% 15%;
-    --card-foreground: 215 15% 90%;
+    --card: 150 18% 18%; /* Darker card background */
+    --card-foreground: 140 15% 90%;
 
-    --popover: 215 25% 15%;
-    --popover-foreground: 215 15% 90%;
+    --popover: 150 18% 18%; /* Darker popover background */
+    --popover-foreground: 140 15% 90%;
 
-    --primary: 199 89% 65%;
+    --primary: 145 65% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 25% 18%;
-    --secondary-foreground: 215 15% 90%;
+    --secondary: 150 18% 22%; /* Darker secondary */
+    --secondary-foreground: 140 15% 90%;
 
-    --muted: 215 25% 20%;
-    --muted-foreground: 215 10% 60%;
+    --muted: 150 18% 25%; /* Darker muted */
+    --muted-foreground: 140 10% 60%;
 
-    --accent: 199 89% 30%;
-    --accent-foreground: 215 15% 90%;
+    --accent: 145 60% 30%; /* Darker accent */
+    --accent-foreground: 140 15% 90%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 25% 25%;
-    --input: 215 25% 20%;
-    --ring: 199 89% 65%;
+    --border: 150 18% 28%;
+    --input: 150 18% 22%;
+    --ring: 145 65% 50%;
     
-    --sidebar-background: 215 25% 15%;
-    --sidebar-foreground: 215 15% 85%;
-    --sidebar-primary: 199 89% 65%;
+    --sidebar-background: 150 18% 16%; /* Darker sidebar */
+    --sidebar-foreground: 140 15% 85%;
+    --sidebar-primary: 145 65% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 20%;
-    --sidebar-accent-foreground: 215 15% 90%;
-    --sidebar-border: 215 25% 22%;
-    --sidebar-ring: 199 89% 65%;
+    --sidebar-accent: 150 18% 22%; /* Darker sidebar accent */
+    --sidebar-accent-foreground: 140 15% 90%;
+    --sidebar-border: 150 18% 25%;
+    --sidebar-ring: 145 65% 50%;
   }
 }
 
@@ -107,6 +112,169 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-image: 
+      radial-gradient(at 0% 0%, hsl(195 40% 88%) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(195 30% 85%) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  
+  /* Professional scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-lg;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+/* Enhanced utility classes for medical UI */
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .gradient-success {
+    background: var(--gradient-success);
+  }
+  
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  /* Medical-themed glass effect - updated to use card color instead of white */
+  .glass-effect {
+    @apply backdrop-blur-lg bg-card/80 dark:bg-card/80 border border-border/50;
+  }
+  
+  /* Elevated card with premium feel */
+  .card-elevated {
+    @apply bg-card shadow-elevated hover:shadow-[0_12px_32px_-8px_hsl(145_20%_25%/0.18)] transition-shadow duration-300;
+  }
+  
+  /* Enhanced input styling */
+  input:focus,
+  textarea:focus {
+    @apply ring-2 ring-primary/20 border-primary transition-all duration-200;
+  }
+  
+  /* Smooth button interactions */
+  button:active {
+    @apply scale-[0.98] transition-transform duration-100;
+  }
+  
+  /* 3D Transform Effects */
+  .transform-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .perspective {
+    perspective: 1000px;
+  }
+  
+  /* Depth effect for cards */
+  .depth-1 {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  }
+  
+  .depth-2 {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  }
+  
+  .depth-3 {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  }
+  
+  .depth-4 {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  }
+  
+  .depth-5 {
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  }
+}
+
+/* Animation keyframes */
+@layer base {
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 5px rgba(200, 255, 200, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(150, 255, 150, 0.8);
+    }
+    100% {
+      box-shadow: 0 0 5px rgba(200, 255, 200, 0.5);
+    }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+  
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  .animate-bounce-in {
+    animation: bounce-in 0.6s ease-out;
   }
 }

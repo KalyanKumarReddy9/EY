@@ -6,24 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Key, User, Bell } from "lucide-react";
+import { User, Bell, Moon, Palette } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [apiKeys, setApiKeys] = useState({
-    iqvia: "",
-    clinicalTrials: "",
-    exim: "",
-  });
   const { toast } = useToast();
-
-  const handleSaveKeys = () => {
-    toast({
-      title: "API Keys Saved",
-      description: "Your API keys have been securely stored",
-    });
-  };
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -41,10 +31,12 @@ export default function Settings() {
 
           <div className="space-y-4 md:space-y-6">
             {/* Profile Settings */}
-            <Card className="shadow-card">
+            <Card className="shadow-card hover:shadow-elevated transition-all duration-300 transform hover:-translate-y-1 border-border/50 glass-effect">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <User className="h-5 w-5 md:h-6 md:w-6 text-primary flex-shrink-0" />
+                  </div>
                   <CardTitle className="text-lg md:text-xl">Profile Settings</CardTitle>
                 </div>
                 <CardDescription className="text-xs md:text-sm">Update your personal information</CardDescription>
@@ -55,7 +47,7 @@ export default function Settings() {
                   <Input
                     id="name"
                     defaultValue="Dr. Sarah Chen"
-                    className="bg-input text-sm"
+                    className="bg-input text-sm border-border focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
@@ -64,7 +56,7 @@ export default function Settings() {
                     id="email"
                     type="email"
                     defaultValue="sarah.chen@pharma.com"
-                    className="bg-input text-sm"
+                    className="bg-input text-sm border-border focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
@@ -72,104 +64,60 @@ export default function Settings() {
                   <Input
                     id="role"
                     defaultValue="Lead Researcher"
-                    className="bg-input text-sm"
+                    className="bg-input text-sm border-border focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
-                <Button className="w-full sm:w-auto text-sm">Save Profile</Button>
+                <Button className="w-full sm:w-auto text-sm bg-gradient-medical hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                  Save Profile
+                </Button>
               </CardContent>
             </Card>
 
-            {/* API Keys */}
-            <Card className="shadow-card">
+            {/* Preferences */}
+            <Card className="shadow-card hover:shadow-elevated transition-all duration-300 transform hover:-translate-y-1 border-border/50 glass-effect">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <Key className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
-                  <CardTitle className="text-lg md:text-xl">API Keys</CardTitle>
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Palette className="h-5 w-5 md:h-6 md:w-6 text-primary flex-shrink-0" />
+                  </div>
+                  <CardTitle className="text-lg md:text-xl">Preferences</CardTitle>
                 </div>
-                <CardDescription className="text-xs md:text-sm">
-                  Manage your data source API keys and integrations
-                </CardDescription>
+                <CardDescription className="text-xs md:text-sm">Configure your notification and display preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 md:space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="iqvia" className="text-xs md:text-sm">IQVIA API Key</Label>
-                  <Input
-                    id="iqvia"
-                    type="password"
-                    placeholder="Enter your IQVIA API key"
-                    value={apiKeys.iqvia}
-                    onChange={(e) =>
-                      setApiKeys({ ...apiKeys, iqvia: e.target.value })
-                    }
-                    className="bg-input text-sm"
+                <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                  <div className="space-y-0.5 min-w-0 flex-1">
+                    <Label className="text-xs md:text-sm flex items-center gap-2">
+                      <Moon className="h-4 w-4 text-primary" />
+                      Dark Mode
+                    </Label>
+                    <p className="text-[10px] md:text-xs text-muted-foreground">
+                      Switch between light and dark theme
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={theme === "dark"} 
+                    onCheckedChange={toggleTheme}
+                    className="flex-shrink-0 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted" 
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="clinicalTrials" className="text-xs md:text-sm">ClinicalTrials.gov API Key</Label>
-                  <Input
-                    id="clinicalTrials"
-                    type="password"
-                    placeholder="Enter your ClinicalTrials.gov API key"
-                    value={apiKeys.clinicalTrials}
-                    onChange={(e) =>
-                      setApiKeys({ ...apiKeys, clinicalTrials: e.target.value })
-                    }
-                    className="bg-input text-sm"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="exim" className="text-xs md:text-sm">EXIM Data API Key</Label>
-                  <Input
-                    id="exim"
-                    type="password"
-                    placeholder="Enter your EXIM API key"
-                    value={apiKeys.exim}
-                    onChange={(e) =>
-                      setApiKeys({ ...apiKeys, exim: e.target.value })
-                    }
-                    className="bg-input text-sm"
-                  />
-                </div>
-                <Button onClick={handleSaveKeys} className="w-full sm:w-auto text-sm">Save API Keys</Button>
-              </CardContent>
-            </Card>
-
-            {/* Notifications */}
-            <Card className="shadow-card">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2">
-                  <Bell className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
-                  <CardTitle className="text-lg md:text-xl">Notifications</CardTitle>
-                </div>
-                <CardDescription className="text-xs md:text-sm">Configure your notification preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 md:space-y-4">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
                   <div className="space-y-0.5 min-w-0 flex-1">
                     <Label className="text-xs md:text-sm">Email Notifications</Label>
                     <p className="text-[10px] md:text-xs text-muted-foreground">
                       Receive email updates about your reports
                     </p>
                   </div>
-                  <Switch defaultChecked className="flex-shrink-0" />
+                  <Switch defaultChecked className="flex-shrink-0 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted" />
                 </div>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
                   <div className="space-y-0.5 min-w-0 flex-1">
                     <Label className="text-xs md:text-sm">Agent Alerts</Label>
                     <p className="text-[10px] md:text-xs text-muted-foreground">
                       Get notified when agents complete analysis
                     </p>
                   </div>
-                  <Switch defaultChecked className="flex-shrink-0" />
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <div className="space-y-0.5 min-w-0 flex-1">
-                    <Label className="text-xs md:text-sm">Dark Mode</Label>
-                    <p className="text-[10px] md:text-xs text-muted-foreground">
-                      Toggle dark mode theme
-                    </p>
-                  </div>
-                  <Switch className="flex-shrink-0" />
+                  <Switch defaultChecked className="flex-shrink-0 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted" />
                 </div>
               </CardContent>
             </Card>

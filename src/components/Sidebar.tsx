@@ -1,7 +1,9 @@
-import { Home, MessageSquare, Users, FileText, Database, Settings, User, X } from "lucide-react";
+import { Home, MessageSquare, Users, FileText, Database, Settings, User, X, LogOut } from "lucide-react";
 import { NavLink } from "./NavLink";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const navigationItems = [
   { title: "Home", icon: Home, url: "/dashboard" },
@@ -18,6 +20,17 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out",
+    });
+    navigate("/");
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -40,11 +53,11 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           {/* Logo & Close Button */}
           <div className="flex h-14 md:h-16 items-center justify-between border-b border-sidebar-border px-4 md:px-6">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg bg-primary">
+              <div className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
                 <Database className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary-foreground" />
               </div>
               <span className="text-base md:text-lg font-semibold text-sidebar-foreground">
-                Pharma AI
+                Pharma Nexus
               </span>
             </div>
             <Button
@@ -64,8 +77,8 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 key={item.url}
                 to={item.url}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
-                  "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:translate-x-1"
                 )}
                 activeClassName="bg-sidebar-accent text-sidebar-primary"
                 onClick={onClose}
@@ -77,7 +90,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           </nav>
 
           {/* Profile */}
-          <div className="border-t border-sidebar-border p-3 md:p-4">
+          <div className="border-t border-sidebar-border p-3 md:p-4 space-y-3">
             <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent px-3 py-2">
               <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-full bg-primary text-primary-foreground flex-shrink-0">
                 <User className="h-4 w-4 md:h-5 md:w-5" />
@@ -91,6 +104,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 </p>
               </div>
             </div>
+            <Button 
+              onClick={handleLogout}
+              variant="outline" 
+              className="w-full justify-start gap-2 text-sm border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive hover:border-destructive transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
           </div>
         </div>
       </aside>

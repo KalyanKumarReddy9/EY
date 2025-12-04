@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, MicOff, Send, Bot, User } from "lucide-react";
+import { agents as allAgents } from "./Agents";
 import { useToast } from "@/hooks/use-toast";
 
 interface Message {
@@ -20,7 +21,8 @@ export default function Chat() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm your Pharma AI Research assistant. I can help you analyze market data, clinical trials, and trade information. How can I assist you today?",
+      content:
+        "Hello! I'm your Pharma AI Research assistant. I can help you interact with the site's worker agents (Market Insights, Trade Data, Clinical Trials, Patent & IP, Safety Signal, Regulatory Monitor, Supply Chain Risk, Clinical Evidence Summarizer). Ask about an agent or paste a document to start.",
       timestamp: new Date(),
     },
   ]);
@@ -42,12 +44,18 @@ export default function Chat() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
-    // Simulate AI response
+    // Simulate AI response with agent-aware content
     setTimeout(() => {
+      const inputLower = input.toLowerCase();
+      const matched = allAgents.find((a) => inputLower.includes(a.name.split(" ")[0].toLowerCase()));
+      const aiContent = matched
+        ? `Assistant (${matched.name}): I ran a quick analysis using the ${matched.name}. Key capabilities considered: ${matched.capabilities.join(", ")}. Summary: Based on available data sources (${matched.source}), here are the top findings related to your query...`
+        : "I've analyzed your query. Based on available pharmaceutical data and literature, here are some key insights relevant to your question...";
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "I've analyzed your query. Based on current pharmaceutical market trends and clinical trial data, here are some key insights...",
+        content: aiContent,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
@@ -70,7 +78,7 @@ export default function Chat() {
       <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
       
       <main className="flex flex-1 flex-col md:ml-64 pt-14 md:pt-0">
-        <div className="border-b border-border bg-card px-4 md:px-6 py-3 md:py-4">
+        <div className="border-b border-border bg-card/50 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 shadow-sm">
           <h1 className="text-xl md:text-2xl font-bold text-foreground">AI Chat Assistant</h1>
           <p className="text-xs md:text-sm text-muted-foreground">
             Ask questions about pharmaceutical data, market insights, and research
@@ -101,8 +109,8 @@ export default function Chat() {
                   )}
                 </div>
                 <Card
-                  className={`flex-1 shadow-soft ${
-                    message.role === "user" ? "bg-primary/5" : ""
+                  className={`flex-1 shadow-soft hover:shadow-card transition-all duration-200 ${
+                    message.role === "user" ? "bg-primary/5 border-primary/20" : "border-border/50"
                   }`}
                 >
                   <CardContent className="p-3 md:p-4">
@@ -143,7 +151,7 @@ export default function Chat() {
                 placeholder="Ask about pharmaceutical markets..."
                 className="bg-input text-sm"
               />
-              <Button onClick={handleSend} size="icon" className="shrink-0 h-9 w-9 md:h-10 md:w-10">
+              <Button onClick={handleSend} size="icon" className="shrink-0 h-9 w-9 md:h-10 md:w-10 bg-gradient-medical hover:opacity-90 transition-all">
                 <Send className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </div>
