@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileHeader } from "@/components/MobileHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +26,19 @@ const processSteps = [
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        const u = JSON.parse(raw);
+        setUserName(u?.name || null);
+      }
+    } catch (e) {
+      setUserName(null);
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -37,7 +50,7 @@ export default function Dashboard() {
           {/* Hero Section */}
           <div className="mb-6 md:mb-8">
             <h1 className="mb-2 text-2xl md:text-3xl font-bold text-foreground">
-              Welcome back, Dr. Chen
+              Welcome back{userName ? `, ${userName}` : ''}
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">
               Your AI-powered pharmaceutical research dashboard

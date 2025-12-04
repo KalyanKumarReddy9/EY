@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 const navigationItems = [
   { title: "Home", icon: Home, url: "/dashboard" },
@@ -22,12 +23,30 @@ interface SidebarProps {
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('user');
+      if (raw) {
+        const u = JSON.parse(raw);
+        setName(u?.name || '');
+        setRole(u?.role || '');
+      }
+    } catch (e) {
+      setName('');
+      setRole('');
+    }
+  }, []);
 
   const handleLogout = () => {
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out",
     });
+    // clear local auth state
+    try { localStorage.removeItem('token'); localStorage.removeItem('user'); } catch (e) {}
     navigate("/");
   };
 
@@ -91,16 +110,16 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
           {/* Profile */}
           <div className="border-t border-sidebar-border p-3 md:p-4 space-y-3">
-            <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent px-3 py-2">
+                <div className="flex items-center gap-3 rounded-lg bg-sidebar-accent px-3 py-2">
               <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-full bg-primary text-primary-foreground flex-shrink-0">
                 <User className="h-4 w-4 md:h-5 md:w-5" />
               </div>
               <div className="flex-1 overflow-hidden">
                 <p className="truncate text-sm font-medium text-sidebar-foreground">
-                  Dr. Sarah Chen
+                  {name || 'Guest User'}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  Lead Researcher
+                  {role || 'Member'}
                 </p>
               </div>
             </div>
