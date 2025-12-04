@@ -16,6 +16,7 @@ export default function Login() {
   const [role, setRole] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const API = (import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:4000';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,12 +28,27 @@ export default function Login() {
       setIsForgotPassword(false);
       return;
     }
-    // Demo authentication - replace with your auth provider
-    toast({
-      title: isSignup ? "Account Created" : "Welcome Back",
-      description: `Successfully ${isSignup ? "signed up" : "logged in"} as ${email}`,
-    });
-    navigate("/dashboard");
+    // Call backend auth
+    const url = `${API}/api/auth/${isSignup ? 'signup' : 'signin'}`;
+    const body: any = { email, password };
+    if (isSignup) { body.name = name; body.role = role; }
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.msg || 'Auth failed');
+        // store token and user
+        if (data.token) localStorage.setItem('token', data.token);
+        if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+        toast({ title: isSignup ? 'Account Created' : 'Welcome Back', description: `${isSignup ? 'Signed up' : 'Logged in'} as ${data.user.email}` });
+        navigate('/dashboard');
+      })
+      .catch((err) => {
+        toast({ title: 'Authentication Error', description: err.message || 'Unable to authenticate' });
+      });
   };
 
   const handleToggleSignup = () => {

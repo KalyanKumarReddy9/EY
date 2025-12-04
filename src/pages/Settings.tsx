@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileHeader } from "@/components/MobileHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,28 @@ export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
+  const API = (import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:4000';
+
+  const [fullName, setFullName] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [roleValue, setRoleValue] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch(`${API}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.msg || 'Failed to fetch profile');
+        const u = data.user;
+        setFullName(u.name || '');
+        setEmailValue(u.email || '');
+        setRoleValue(u.role || '');
+      })
+      .catch(() => {
+        // ignore failures silently
+      });
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -46,7 +68,9 @@ export default function Settings() {
                   <Label htmlFor="name" className="text-xs md:text-sm">Full Name</Label>
                   <Input
                     id="name"
-                    defaultValue="Dr. Sarah Chen"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Full name"
                     className="bg-input text-sm border-border focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
@@ -55,7 +79,9 @@ export default function Settings() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue="sarah.chen@pharma.com"
+                    value={emailValue}
+                    onChange={(e) => setEmailValue(e.target.value)}
+                    placeholder="email@company.com"
                     className="bg-input text-sm border-border focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
@@ -63,11 +89,29 @@ export default function Settings() {
                   <Label htmlFor="role" className="text-xs md:text-sm">Role</Label>
                   <Input
                     id="role"
-                    defaultValue="Lead Researcher"
+                    value={roleValue}
+                    onChange={(e) => setRoleValue(e.target.value)}
+                    placeholder="Role"
                     className="bg-input text-sm border-border focus:ring-2 focus:ring-primary/30 transition-all"
                   />
                 </div>
-                <Button className="w-full sm:w-auto text-sm bg-gradient-medical hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                <Button onClick={async () => {
+                  const token = localStorage.getItem('token');
+                  if (!token) { toast({ title: 'Not signed in', description: 'Please sign in to update profile' }); return; }
+                  try {
+                    const res = await fetch(`${API}/api/auth/me`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                      body: JSON.stringify({ name: fullName, email: emailValue, role: roleValue })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.msg || 'Failed to update');
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    toast({ title: 'Profile Saved', description: 'Your profile has been updated' });
+                  } catch (err: any) {
+                    toast({ title: 'Update Failed', description: err.message || 'Could not update profile' });
+                  }
+                }} className="w-full sm:w-auto text-sm bg-gradient-medical hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                   Save Profile
                 </Button>
               </CardContent>
