@@ -13,6 +13,7 @@ import Knowledge from "./pages/Knowledge";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/reports" element={<Reports />} />
             <Route path="/knowledge" element={<Knowledge />} />
             <Route path="/settings" element={<Settings />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
+const apiRoutes = require('./routes/api');
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ mongoose.connect(MONGO_URI, { connectTimeoutMS: 10000 })
   .catch((err) => console.error('MongoDB connection error:', err.message));
 
 app.use('/api/auth', authRoutes);
+app.use('/api', apiRoutes);
 
 app.get('/', (_, res) => res.json({ ok: true, msg: 'Backend running' }));
 

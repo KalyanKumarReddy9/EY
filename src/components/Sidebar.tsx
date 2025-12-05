@@ -1,4 +1,4 @@
-import { Home, MessageSquare, Users, FileText, Database, Settings, User, X, LogOut } from "lucide-react";
+import { Home, MessageSquare, Users, FileText, Database, Settings, User, X, LogOut, Search } from "lucide-react";
 import { NavLink } from "./NavLink";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -13,6 +13,7 @@ const navigationItems = [
   { title: "Reports", icon: FileText, url: "/reports" },
   { title: "Knowledge Base", icon: Database, url: "/knowledge" },
   { title: "Settings", icon: Settings, url: "/settings" },
+  
 ];
 
 interface SidebarProps {
