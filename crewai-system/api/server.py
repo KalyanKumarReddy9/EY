@@ -397,18 +397,30 @@ def get_patent_data():
             top_n=int(top_n)
         )
         
-        return jsonify({
+        # Include text_summary in response if available
+        response_data = {
             "query": f"Patent search for {query or assignee or ipc_code}",
-            "data": data,
+            "data": data.get("data", []),
+            "text_summary": data.get("text_summary", ""),
+            "source": data.get("source", "Unknown"),
             "timestamp": datetime.now().isoformat()
-        })
+        }
+        
+        # Add error info if present
+        if "error" in data:
+            response_data["error"] = data["error"]
+        
+        return jsonify(response_data)
     except Exception as e:
         # Even if there's an exception, try to return mock data
         try:
             mock_data = patent_agent.get_mock_patent_data(query or "gene therapy", int(top_n))
+            text_representation = "\n\n".join([patent_agent.format_patent_as_text(patent) for patent in mock_data])
             return jsonify({
                 "query": f"Patent search for {query or assignee or ipc_code}",
                 "data": mock_data,
+                "text_summary": text_representation,
+                "source": "Mock Data",
                 "timestamp": datetime.now().isoformat()
             })
         except Exception as mock_e:
@@ -562,22 +574,33 @@ def generate_report():
         
         # Return appropriate response
         print("Returning response...")
-        response = None
         if report_type == 'pdf' and filepath:
-            response = send_file(filepath, as_attachment=True)
+            # For PDF, return download info instead of sending file directly
+            return jsonify({
+                "report_id": report_id,
+                "query": query,
+                "report_type": report_type,
+                "message": "PDF report generated successfully",
+                "download_url": f"/api/reports/{report_id}/download"
+            })
         elif report_type == 'excel' and filepath:
-            response = send_file(filepath, as_attachment=True)
+            # For Excel, return download info instead of sending file directly
+            return jsonify({
+                "report_id": report_id,
+                "query": query,
+                "report_type": report_type,
+                "message": "Excel report generated successfully",
+                "download_url": f"/api/reports/{report_id}/download"
+            })
         elif report_type == 'text' and summary:
-            response = jsonify({
+            return jsonify({
                 "query": query,
                 "summary": summary,
                 "report_id": report_id,
                 "timestamp": datetime.now().isoformat()
             })
         else:
-            response = jsonify({"error": "Invalid report type or missing data"}), 400
-            
-        return response
+            return jsonify({"error": "Invalid report type or missing data"}), 400
             
     except Exception as e:
         print(f"Error generating report: {str(e)}")  # Log the error for debugging

@@ -171,15 +171,13 @@ export default function Chat() {
         setMessages((prev) => [...prev, reportMessage]);
       } else {
         // Handle PDF and Excel downloads
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `pharma-report-${new Date().toISOString().slice(0, 10)}.${reportType === 'pdf' ? 'pdf' : 'xlsx'}`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url); // Clean up the URL object
+        const data = await res.json();
+        if (data.download_url) {
+          // Trigger download by navigating to the download URL
+          window.open(`${API}${data.download_url}`, '_blank');
+        } else {
+          toast({ title: "Download URL not available", variant: "destructive" });
+        }
       }
 
     } catch (error) {
@@ -220,6 +218,7 @@ export default function Chat() {
     
     // Handle data wrapped in {data: [...]} format (most common from our API)
     const actualData = data.data || data;
+    const textSummary = data.text_summary || null;
     
     // Handle Clinical Trials data
     if (Array.isArray(actualData) && actualData.some(item => item.nct_id || item.title)) {
@@ -256,6 +255,16 @@ export default function Chat() {
       return (
         <div className="space-y-4">
           <p className="font-semibold">Found {actualData.length} patents</p>
+          
+          {/* Show text summary if available */}
+          {textSummary && (
+            <div className="border rounded p-3 bg-muted/50">
+              <h4 className="font-medium mb-2">Text Summary:</h4>
+              <pre className="text-sm whitespace-pre-wrap">{textSummary}</pre>
+            </div>
+          )}
+          
+          {/* Show structured data */}
           <div className="grid gap-3">
             {actualData.map((patent: any, idx: number) => (
               <div key={idx} className="border rounded p-3">

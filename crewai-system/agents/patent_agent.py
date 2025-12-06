@@ -8,6 +8,56 @@ from data_sources import pubmed_patents, openalex_papers
 # Load environment variables
 load_dotenv()
 
+def format_patent_as_text(patent_data):
+    """
+    Format patent data as readable text
+    
+    Args:
+        patent_data (dict): Patent data
+        
+    Returns:
+        str: Formatted text representation
+    """
+    if not patent_data:
+        return "No patent data available"
+    
+    # Handle both single patent and list of patents
+    if isinstance(patent_data, list):
+        if not patent_data:
+            return "No patents found"
+        # Format first patent for text representation
+        patent = patent_data[0]
+    else:
+        patent = patent_data
+    
+    # Format as text
+    text_parts = []
+    text_parts.append(f"Title: {patent.get('title', 'N/A')}")
+    
+    if patent.get('patent_id'):
+        text_parts.append(f"Patent ID: {patent.get('patent_id')}")
+    
+    if patent.get('assignee'):
+        text_parts.append(f"Assignee: {patent.get('assignee')}")
+    
+    if patent.get('filing_date'):
+        text_parts.append(f"Filing Date: {patent.get('filing_date')}")
+    
+    if patent.get('grant_date'):
+        text_parts.append(f"Grant Date: {patent.get('grant_date')}")
+    
+    if patent.get('expiry_date'):
+        text_parts.append(f"Expiry Date: {patent.get('expiry_date')}")
+    
+    if patent.get('ipc_codes'):
+        ipc_codes = patent.get('ipc_codes')
+        if isinstance(ipc_codes, list):
+            text_parts.append(f"IPC Codes: {', '.join(ipc_codes)}")
+        else:
+            text_parts.append(f"IPC Codes: {ipc_codes}")
+    
+    return "\n".join(text_parts)
+
 def search_patents(query, assignee=None, ipc_code=None, top_n=10):
     """
     Search for patents using multiple data sources
@@ -36,8 +86,13 @@ def search_patents(query, assignee=None, ipc_code=None, top_n=10):
             if ipc_code:
                 pubmed_results = [p for p in pubmed_results if ipc_code in str(p.get('ipc_codes', []))]
             
+            # Create both structured and text representations
+            structured_data = pubmed_results[:top_n]
+            text_representation = "\n\n".join([format_patent_as_text(patent) for patent in pubmed_results[:top_n]])
+            
             return {
-                "data": pubmed_results[:top_n],
+                "data": structured_data,
+                "text_summary": text_representation,
                 "source": "PubMed",
                 "query": f"Patent search for {query}",
                 "timestamp": __import__('datetime').datetime.now().isoformat()
@@ -63,8 +118,12 @@ def search_patents(query, assignee=None, ipc_code=None, top_n=10):
                 }
                 patent_like_results.append(patent_entry)
             
+            # Create both structured and text representations
+            text_representation = "\n\n".join([format_patent_as_text(patent) for patent in patent_like_results])
+            
             return {
                 "data": patent_like_results,
+                "text_summary": text_representation,
                 "source": "OpenAlex (converted to patent format)",
                 "query": f"Patent search for {query}",
                 "timestamp": __import__('datetime').datetime.now().isoformat()
@@ -73,8 +132,11 @@ def search_patents(query, assignee=None, ipc_code=None, top_n=10):
         # If no results from either source, return mock data
         print("No results from PubMed or OpenAlex, returning mock data")
         mock_data = pubmed_patents.get_mock_patent_data(query, top_n)
+        text_representation = "\n\n".join([format_patent_as_text(patent) for patent in mock_data])
+        
         return {
             "data": mock_data,
+            "text_summary": text_representation,
             "source": "Mock Data",
             "query": f"Patent search for {query}",
             "timestamp": __import__('datetime').datetime.now().isoformat()
@@ -84,8 +146,11 @@ def search_patents(query, assignee=None, ipc_code=None, top_n=10):
         print(f"Error in patent search: {str(e)}")
         # Return mock data as final fallback
         mock_data = pubmed_patents.get_mock_patent_data(query, top_n)
+        text_representation = "\n\n".join([format_patent_as_text(patent) for patent in mock_data])
+        
         return {
             "data": mock_data,
+            "text_summary": text_representation,
             "source": "Mock Data (Error Fallback)",
             "query": f"Patent search for {query}",
             "timestamp": __import__('datetime').datetime.now().isoformat(),
