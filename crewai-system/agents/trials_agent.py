@@ -8,6 +8,9 @@ import random
 from datetime import datetime, timedelta
 import re
 
+# Import ClinicalTrials.gov API integration
+from data_sources import clinicaltrials_api
+
 # Load environment variables
 load_dotenv()
 
@@ -69,7 +72,7 @@ def extract_medical_condition(query):
 
 def search_trials(condition, phase=None, status=None, top_n=10, database_name="pharma_hub"):
     """
-    Search clinical trials by condition
+    Search clinical trials by condition using ClinicalTrials.gov API with fallback to database and mock data
     
     Args:
         condition (str): Medical condition to search for
@@ -79,50 +82,100 @@ def search_trials(condition, phase=None, status=None, top_n=10, database_name="p
         database_name (str): Name of the MongoDB database
     
     Returns:
-        list: List of clinical trials
+        dict: Search results with metadata
     """
     try:
+        # First, try to get data from ClinicalTrials.gov API
+        print(f"Searching ClinicalTrials.gov API for: {condition}")
+        try:
+            # Extract clean medical condition from query
+            clean_condition = extract_medical_condition(condition)
+            
+            # Search using ClinicalTrials.gov API
+            trials = clinicaltrials_api.search_clinical_trials(clean_condition, max_results=top_n)
+            
+            if trials and len(trials) > 0:
+                print(f"Found {len(trials)} trials from ClinicalTrials.gov API")
+                
+                # Apply filters if specified
+                if phase:
+                    trials = [t for t in trials if phase.lower() in t.get('phase', '').lower()]
+                if status:
+                    trials = [t for t in trials if status.lower() in t.get('status', '').lower()]
+                
+                return {
+                    "data": trials[:top_n],
+                    "source": "ClinicalTrials.gov API",
+                    "query": f"Clinical trials search for {condition}",
+                    "timestamp": datetime.now().isoformat()
+                }
+        except Exception as api_error:
+            print(f"Error fetching from ClinicalTrials.gov API: {str(api_error)}")
+        
+        # If API fails, try to get data from MongoDB
+        print("Trying to get data from MongoDB...")
         client = get_mongo_client()
         db = client[database_name]
         
         # Check if we have data in the database
         count = db["clinical_trials"].count_documents({})
-        if count == 0:
-            print("No clinical trials data found in database, returning mock data")
-            return get_mock_trials(condition, phase, status, top_n)
+        if count > 0:
+            # Build query
+            query = {"condition": {"$regex": condition, "$options": "i"}}
+            if phase:
+                query["phase"] = {"$regex": phase, "$options": "i"}
+            if status:
+                query["status"] = {"$regex": status, "$options": "i"}
+            
+            # Find trials
+            trials = list(db["clinical_trials"].find(query).limit(top_n))
+            
+            # Format results
+            formatted_trials = []
+            for trial in trials:
+                formatted_trial = {
+                    "nct_id": trial.get("nct_id"),
+                    "title": trial.get("title"),
+                    "condition": trial.get("condition"),
+                    "phase": trial.get("phase"),
+                    "status": trial.get("status"),
+                    "sponsor": trial.get("sponsor")
+                }
+                formatted_trials.append(formatted_trial)
+            
+            client.close()
+            
+            if formatted_trials:
+                return {
+                    "data": formatted_trials,
+                    "source": "MongoDB",
+                    "query": f"Clinical trials search for {condition}",
+                    "timestamp": datetime.now().isoformat()
+                }
         
-        # Build query
-        query = {"condition": {"$regex": condition, "$options": "i"}}
-        if phase:
-            query["phase"] = {"$regex": phase, "$options": "i"}
-        if status:
-            query["status"] = {"$regex": status, "$options": "i"}
+        client.close()
         
-        # Find trials
-        trials = list(db["clinical_trials"].find(query).limit(top_n))
-        
-        # Format results
-        formatted_trials = []
-        for trial in trials:
-            formatted_trial = {
-                "nct_id": trial.get("nct_id"),
-                "title": trial.get("title"),
-                "condition": trial.get("condition"),
-                "phase": trial.get("phase"),
-                "status": trial.get("status"),
-                "sponsor": trial.get("sponsor")
-            }
-            formatted_trials.append(formatted_trial)
-        
-        return formatted_trials
+        # If no data in database, return mock data
+        print("No data found in API or database, returning mock data")
+        mock_data = get_mock_trials(condition, phase, status, top_n)
+        return {
+            "data": mock_data,
+            "source": "Mock Data",
+            "query": f"Clinical trials search for {condition}",
+            "timestamp": datetime.now().isoformat()
+        }
         
     except Exception as e:
         print(f"Error in Trials agent: {str(e)}")
-        # Return mock data as fallback
-        return get_mock_trials(condition, phase, status, top_n)
-    finally:
-        if 'client' in locals():
-            client.close()
+        # Return mock data as final fallback
+        mock_data = get_mock_trials(condition, phase, status, top_n)
+        return {
+            "data": mock_data,
+            "source": "Mock Data (Error Fallback)",
+            "query": f"Clinical trials search for {condition}",
+            "timestamp": datetime.now().isoformat(),
+            "error": str(e)
+        }
 
 def get_trial_statistics(database_name="pharma_hub"):
     """
@@ -176,15 +229,13 @@ def get_trial_statistics(database_name="pharma_hub"):
             "top_sponsors": [{"sponsor": item["_id"], "count": item["count"]} for item in top_sponsors]
         }
         
+        client.close()
         return stats
         
     except Exception as e:
         print(f"Error in Trials agent statistics: {str(e)}")
         # Return mock data as fallback
         return get_mock_trial_statistics()
-    finally:
-        if 'client' in locals():
-            client.close()
 
 def get_mock_trials(condition, phase=None, status=None, top_n=10):
     """

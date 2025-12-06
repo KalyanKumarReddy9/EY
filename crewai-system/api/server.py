@@ -313,16 +313,27 @@ def get_trials_data():
         if not condition:
             condition = "diabetes"  # Default condition
         
-        data = trials_agent.search_trials(
+        result = trials_agent.search_trials(
             condition=condition,
             phase=phase,
             status=status,
             top_n=int(top_n)
         )
         
+        # Handle both old and new return formats
+        if isinstance(result, dict):
+            # New format with metadata
+            data = result.get("data", [])
+            source = result.get("source", "Unknown")
+        else:
+            # Old format (just data list)
+            data = result
+            source = "API"
+        
         return jsonify({
             "query": f"Clinical trials for {condition}",
             "data": data,
+            "source": source,
             "timestamp": datetime.now().isoformat()
         })
     except Exception as e:
@@ -332,6 +343,7 @@ def get_trials_data():
             return jsonify({
                 "query": f"Clinical trials for {condition or 'diabetes'}",
                 "data": mock_data,
+                "source": "Mock Data",
                 "timestamp": datetime.now().isoformat()
             })
         except Exception as mock_e:

@@ -4,7 +4,7 @@ Test script to verify all API integrations are working correctly
 import os
 from dotenv import load_dotenv
 from agents import patent_agent, trials_agent, webintel_agent
-from data_sources import pubmed_patents, openalex_papers
+from data_sources import pubmed_patents, openalex_papers, clinicaltrials_api
 
 # Load environment variables
 load_dotenv()
@@ -33,8 +33,18 @@ def test_all_apis():
     except Exception as e:
         print(f"   ✗ OpenAlex API error: {str(e)}")
     
-    # Test 3: Patent Agent (uses PubMed + OpenAlex)
-    print("\n3. Testing Patent Agent...")
+    # Test 3: ClinicalTrials.gov API
+    print("\n3. Testing ClinicalTrials.gov API...")
+    try:
+        ct_results = clinicaltrials_api.search_clinical_trials("diabetes", max_results=2)
+        print(f"   ✓ ClinicalTrials.gov API working - Found {len(ct_results)} results")
+        if ct_results:
+            print(f"   ✓ First result: {ct_results[0].get('title', '')[:50]}...")
+    except Exception as e:
+        print(f"   ✗ ClinicalTrials.gov API error: {str(e)}")
+    
+    # Test 4: Patent Agent (uses PubMed + OpenAlex)
+    print("\n4. Testing Patent Agent...")
     try:
         patent_results = patent_agent.search_patents("diabetes treatment", top_n=2)
         # Patent agent returns a dict with "data" key
@@ -53,20 +63,21 @@ def test_all_apis():
     except Exception as e:
         print(f"   ✗ Patent Agent error: {str(e)}")
     
-    # Test 4: Clinical Trials Agent
-    print("\n4. Testing Clinical Trials Agent...")
+    # Test 5: Clinical Trials Agent (uses ClinicalTrials.gov API)
+    print("\n5. Testing Clinical Trials Agent...")
     try:
         trials_results = trials_agent.search_trials("diabetes", top_n=2)
-        # Clinical trials agent returns a list directly
-        if isinstance(trials_results, list):
-            data = trials_results
-            print(f"   ✓ Clinical Trials Agent working - Found {len(data)} results")
+        # Clinical trials agent returns a dict with "data" key
+        if isinstance(trials_results, dict):
+            source = trials_results.get("source", "Unknown")
+            data = trials_results.get("data", [])
+            print(f"   ✓ Clinical Trials Agent working - Source: {source}, Found {len(data)} results")
             if data:
                 title = data[0].get('brief_title', data[0].get('title', '')) if isinstance(data[0], dict) else "Unknown"
                 print(f"   ✓ First result: {title[:50]}...")
-        elif isinstance(trials_results, dict):
-            # Handle case where it returns a dict
-            data = trials_results.get("data", [])
+        elif isinstance(trials_results, list):
+            # Handle case where it returns a list directly
+            data = trials_results
             print(f"   ✓ Clinical Trials Agent working - Found {len(data)} results")
             if data:
                 title = data[0].get('brief_title', data[0].get('title', '')) if isinstance(data[0], dict) else "Unknown"
@@ -76,8 +87,8 @@ def test_all_apis():
     except Exception as e:
         print(f"   ✗ Clinical Trials Agent error: {str(e)}")
     
-    # Test 5: Web Intel Agent
-    print("\n5. Testing Web Intel Agent...")
+    # Test 6: Web Intel Agent
+    print("\n6. Testing Web Intel Agent...")
     try:
         web_results = webintel_agent.search_web("diabetes treatment", num_results=2)
         # Web intel agent returns a list directly
@@ -99,8 +110,8 @@ def test_all_apis():
     except Exception as e:
         print(f"   ✗ Web Intel Agent error: {str(e)}")
     
-    # Test 6: API Keys Verification
-    print("\n6. Verifying API Keys...")
+    # Test 7: API Keys Verification
+    print("\n7. Verifying API Keys...")
     api_keys = {
         "PINECONE_API_KEY": os.environ.get("PINECONE_API_KEY"),
         "HF_TOKEN": os.environ.get("HF_TOKEN"),
