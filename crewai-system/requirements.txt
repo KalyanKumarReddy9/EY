@@ -7,7 +7,7 @@ pandas
 python-dotenv
 praw
 sentence-transformers
-pinecone-client
+pinecone
 langchain
 fpdf
 matplotlib
