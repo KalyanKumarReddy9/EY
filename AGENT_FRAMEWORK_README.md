@@ -20,7 +20,7 @@ This document describes the implemented Agent AI Framework for the Pharma Mind N
 ### 3. Patent Landscape Agent
 - **Endpoint**: `/api/patents`
 - **Functionality**: Searches patent databases for intellectual property insights
-- **Data Sources**: PatentsView API with mock data fallback
+- **Data Sources**: PubMed API with mock data fallback
 - **Output**: Patent status tables, competitive filing heatmaps
 
 ### 4. Clinical Trials Agent
@@ -74,9 +74,9 @@ This document describes the implemented Agent AI Framework for the Pharma Mind N
 
 ### Starting the Backend
 ```bash
-cd backend
-npm install
-npm run dev
+cd crewai-system
+pip install -r requirements.txt
+python -m api.server
 ```
 
 ### Starting the Frontend
@@ -99,16 +99,70 @@ After receiving agent responses, you can click "Generate Report" to create a PDF
 ## Configuration
 
 ### Environment Variables
-Create a `.env` file in the backend directory with the following variables:
+Create a `.env` file in the `crewai-system` directory with the following variables:
 
 ```
-GOOGLE_API_KEY=your_google_api_key
-GOOGLE_CSE_ID=your_custom_search_engine_id
-SUDO_DEV_API_KEY=your_sudo_dev_api_key
-PUBMED_API_KEY=your_pubmed_api_key
-OPENFDA_API_KEY=your_openfda_api_key
-MONGO_URI=your_mongodb_connection_string
+# Required DB + server
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
+PORT=4000
+JWT_SECRET=your_jwt_secret_here
+
+# Embeddings / Vector DB
+PINECONE_API_KEY=your_pinecone_api_key_here
+PINECONE_ENV=us-west1-gcp
+
+# Hugging Face Token
+HF_TOKEN=your_hugging_face_token_here
+
+# PubMed API Key
+PUBMED_API_KEY=your_pubmed_api_key_here
+
+# Google API keys
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_CSE_ID=your_google_custom_search_engine_id_here
+
+# Alternative APIs (optional)
+GEMINI_API_KEY=your_gemini_api_key_here
+SUDO_DEV_API_KEY=your_sudo_dev_api_key_here
+OPENFDA_API_KEY=your_openfda_api_key_here
 ```
+
+### Obtaining API Keys
+
+#### 1. MongoDB
+- Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- Create a cluster and database user
+- Obtain your connection string from the Atlas dashboard
+
+#### 2. Pinecone
+- Sign up at [Pinecone](https://www.pinecone.io/)
+- Create an API key in your dashboard
+- Note the environment region for the PINECONE_ENV variable
+
+#### 3. Hugging Face
+- Sign up at [Hugging Face](https://huggingface.co/)
+- Create an access token in your account settings
+- Use the token as your HF_TOKEN
+
+#### 4. PubMed (NCBI)
+- Visit [NCBI API Keys](https://www.ncbi.nlm.nih.gov/account/settings/)
+- Sign in or create an account
+- Generate an API key in your account settings
+
+#### 5. Google APIs
+- Go to [Google Cloud Console](https://console.cloud.google.com/)
+- Create a new project or select an existing one
+- Enable the Custom Search API
+- Create credentials (API key)
+- For Google Custom Search Engine (CSE):
+  - Go to [Programmable Search Engine](https://programmablesearchengine.google.com/)
+  - Create a new search engine
+  - Configure it to search the entire web
+  - Obtain the Search Engine ID
+
+#### 6. Sudo.Dev (Optional)
+- Sign up at [Sudo.Dev](https://sudo.dev/)
+- Obtain an API key for enhanced LLM processing
 
 If these are not provided, the system will automatically fall back to mock data.
 

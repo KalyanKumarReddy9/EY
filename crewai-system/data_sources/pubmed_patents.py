@@ -8,6 +8,11 @@ import random
 from datetime import datetime, timedelta
 import re
 import xml.etree.ElementTree as ET
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 def extract_medical_condition(query):
     """
@@ -73,6 +78,9 @@ def search_patents_pubmed(query, max_results=10):
         # Extract clean medical condition from query
         clean_query = extract_medical_condition(query)
         
+        # Get PubMed API key from environment
+        pubmed_api_key = os.environ.get("PUBMED_API_KEY")
+        
         # PubMed API endpoint for searching
         # Note: PubMed doesn't have direct patent search, so we'll search for articles
         # and extract patent-like information
@@ -86,6 +94,10 @@ def search_patents_pubmed(query, max_results=10):
             "retmode": "json",
             "sort": "relevance"
         }
+        
+        # Add API key if available
+        if pubmed_api_key and pubmed_api_key != "your_pubmed_api_key_here":
+            params["api_key"] = pubmed_api_key
         
         # Make request to get PMIDs
         response = requests.get(base_url, params=params)
@@ -105,6 +117,10 @@ def search_patents_pubmed(query, max_results=10):
             "id": ",".join(pmids[:max_results]),
             "retmode": "xml"
         }
+        
+        # Add API key if available
+        if pubmed_api_key and pubmed_api_key != "your_pubmed_api_key_here":
+            details_params["api_key"] = pubmed_api_key
         
         details_response = requests.get(details_url, params=details_params)
         details_response.raise_for_status()
